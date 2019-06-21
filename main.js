@@ -1,12 +1,12 @@
-/* 
-  ____                _       _  __               _ 
+/*
+  ____                _       _  __               _
  |  _ \              | |     | |/ _|             (_)
- | |_) |_   _        | | __ _| | |_ _ __ __ _ _____ 
+ | |_) |_   _        | | __ _| | |_ _ __ __ _ _____
  |  _ <| | | |   _   | |/ _` | |  _| '__/ _` |_  / |
  | |_) | |_| |  | |__| | (_| | | | | | | (_| |/ /| |
  |____/ \__, |   \____/ \__,_|_|_| |_|  \__,_/___|_|
-         __/ |                                      
-        |___/                                       
+         __/ |
+        |___/
  */
 const electron = require('electron');
 const url = require('url');
@@ -302,13 +302,27 @@ app.on('ready', function () {
 
 
 function readConfig() {
-    const config = require('./config.json');
+    var config = require('./config.json');
     return
+}
+
+function successLog(fileName, returnConfig) {
+  console.log('converted to correct format')
+  fs.writeFile('profiles/' + fileName + '.json', JSON.stringify(returnConfig), 'utf8', (err) => {
+    if (err) {
+        console.error(err);
+        return;
+    };
+    successMessage = 'Successfully created: <br>' + path.join(__dirname, 'profiles/' + fileName + '.json')
+    consoleSuccessMessage = 'Successfully created: ' + path.join(__dirname, 'profiles/' + fileName + '.json')
+    console.log(consoleSuccessMessage)
+    mainWindow.webContents.send('output', successMessage);
+  });
 }
 
 //catch save
 ipcMain.on('configSave', function (e, config,profile_name) {
-    const old_configs = require('./config.json')   
+    const old_configs = require('./config.json')
     old_configs[profile_name] = JSON.parse(config)
     console.log('odonbe')
     fs.writeFile('config.json', JSON.stringify(old_configs), (err) => {
@@ -330,12 +344,12 @@ ipcMain.on('configOverwrite', function (e, newConfig) {
 
 
 ipcMain.on('returnConfigDelete', function (e) {
-    old_configs = require('./config.json')   
+    old_configs = require('./config.json')
     mainWindow.webContents.send('profilesDelete', old_configs);
 });
 
 ipcMain.on('returnConfig', function (e) {
-    old_configs = require('./config.json')   
+    old_configs = require('./config.json')
     mainWindow.webContents.send('returnedConfig', old_configs);
 });
 
@@ -343,7 +357,7 @@ ipcMain.on('returnConfig', function (e) {
 
 
 ipcMain.on('returnNames',function(e){
-    old_configs = require('./config.json')   
+    old_configs = require('./config.json')
     mainWindow.webContents.send('returnedNames', old_configs);
 })
 
@@ -386,23 +400,14 @@ ipcMain.on('pd', function (e,config,pname) {
         },
         "title": fileName
     }]
-    console.log('converted to correct format')
-    fs.writeFile('profiles/' + fileName + '.json', JSON.stringify(returnConfig), 'utf8', (err) => {
-        if (err) {
-            console.error(err);
-            return;
-        };
-        successMessage = 'Successfully created: <br>' + path.join(__dirname, 'profiles/' + fileName + '.json')
-        console.log(successMessage)
-        mainWindow.webContents.send('output', successMessage);
-    });
+    successLog(fileName, returnConfig)
 });
 
 
 
 ipcMain.on('hastey', function (e,config,pname) {
     console.log('Converting profile for Hastey Supreme')
-    const config = require('./config.json');
+    var config = require('./config.json');
     fileName = 'hastey_' + pname.replace(' ','') + '-' + Math.random().toString(36).substring(2, 6)
     console.log(fileName)
     if (config['b_country'] == 'US'){
@@ -436,16 +441,7 @@ ipcMain.on('hastey', function (e,config,pname) {
         "tel": config['phone'],
         "zip":config['b_zip']
     }]
-    console.log('converted to correct format')
-    fs.writeFile('profiles/' + fileName + '.json', JSON.stringify(returnConfig), 'utf8', (err) => {
-        if (err) {
-            console.error(err);
-            return;
-        };
-        successMessage = 'Successfully created: <br>' + path.join(__dirname, 'profiles/' + fileName + '.json')
-        console.log(successMessage)
-        mainWindow.webContents.send('output', successMessage);
-    });
+    successLog(fileName, returnConfig)
 });
 
 
@@ -453,7 +449,7 @@ ipcMain.on('hastey', function (e,config,pname) {
 
 ipcMain.on('cyber', function (e,config,pname) {
     console.log('Converting profile for CyberAIO')
-    const config = require('./config.json');
+    var config = require('./config.json');
     fileName = 'cyber_' + pname.replace(' ','') + '-' + Math.random().toString(36).substring(2, 6)
     console.log(fileName)
     config['country'] = short2long[config['country']]
@@ -505,21 +501,12 @@ ipcMain.on('cyber', function (e,config,pname) {
             "favourite": false
         }
     }
-    console.log('converted to correct format')
-    fs.writeFile('profiles/' + fileName + '.json', JSON.stringify(returnConfig), 'utf8', (err) => {
-        if (err) {
-            console.error(err);
-            return;
-        };
-        successMessage = 'Successfully created: <br>' + path.join(__dirname, 'profiles/' + fileName + '.json')
-        console.log(successMessage)
-        mainWindow.webContents.send('output', successMessage);
-    });
+    successLog(fileName, returnConfig)
 });
 
 ipcMain.on('eve', function (e,config,pname) {
     console.log('Converting profile for EVEAIO')
-    const config = require('./config.json');
+    var config = require('./config.json');
     fileName = 'EVE_' + pname.replace(' ','') + '-' + Math.random().toString(36).substring(2, 6)
     console.log(fileName)
 
@@ -530,7 +517,7 @@ ipcMain.on('eve', function (e,config,pname) {
         config['b_state'] = 'None'
     }
 
-    returnConfig = 
+    returnConfig =
         [{
                 "ProfileName": fileName,
                 "BillingFirstName": config['b_fname'],
@@ -563,13 +550,13 @@ ipcMain.on('eve', function (e,config,pname) {
                 "SameBillingShipping": config['billingequalshipping'],
                 "BirthDay": "10",
                 "BirthMonth": "1",
-                "BirthYear": "1990",       
+                "BirthYear": "1990",
         }]
-    
 
-    /* 
+
+    /*
     FOR XML
-    
+
     returnConfig = {
         "ArrayOfProfile": {
             "Profile": {
@@ -609,7 +596,7 @@ ipcMain.on('eve', function (e,config,pname) {
                 "BillingVarious": {}
             }
         }
-    } 
+    }
 
 
     var builder = new xml2js.Builder();
@@ -624,25 +611,12 @@ ipcMain.on('eve', function (e,config,pname) {
         console.log(successMessage)
         mainWindow.webContents.send('output', successMessage);
     });*/
-
-
-    console.log('converted to correct format')
-    fs.writeFile('profiles/' + fileName + '.json', JSON.stringify(returnConfig), 'utf8', (err) => {
-        if (err) {
-            console.error(err);
-            return;
-        };
-        successMessage = 'Successfully created: <br>' + path.join(__dirname, 'profiles/' + fileName + '.json')
-        console.log(successMessage)
-        mainWindow.webContents.send('output', successMessage);
-    });
-
-
+    successLog(fileName, returnConfig)
 });
 
 ipcMain.on('dashe', function (e,config,pname) {
     console.log('Converting profile for Project Destroyer')
-    const config = require('./config.json');
+    var config = require('./config.json');
     fileName = 'dashe_' + pname.replace(' ','') + '-' + Math.random().toString(36).substring(2, 6)
     console.log(fileName)
     returnConfig = {
@@ -681,22 +655,12 @@ ipcMain.on('dashe', function (e,config,pname) {
             }
         }
     }
-    console.log('converted to correct format')
-    fs.writeFile('profiles/' + fileName + '.json', JSON.stringify(returnConfig), 'utf8', (err) => {
-        if (err) {
-            console.error(err);
-            return;
-        };
-        successMessage = 'Successfully created: <br>' + path.join(__dirname, 'profiles/' + fileName + '.json')
-        console.log(successMessage)
-        mainWindow.webContents.send('output', successMessage);
-    });
-
+    successLog(fileName, returnConfig)
 })
 
 ipcMain.on('phantom', function (e,config,pname) {
     console.log('Converting profile for Phantom')
-    const config = require('./config.json');
+    var config = require('./config.json');
     fileName = 'phantom_' + pname.replace(' ','') + '-' + Math.random().toString(36).substring(2, 6)
     console.log(fileName)
     returnConfig = [{
@@ -730,22 +694,13 @@ ipcMain.on('phantom', function (e,config,pname) {
         }
 
     }]
-    console.log('converted to correct format')
-    fs.writeFile('profiles/' + fileName + '.json', JSON.stringify(returnConfig), 'utf8', (err) => {
-        if (err) {
-            console.error(err);
-            return;
-        };
-        successMessage = 'Successfully created: <br>' + path.join(__dirname, 'profiles/' + fileName + '.json')
-        console.log(successMessage)
-        mainWindow.webContents.send('output', successMessage);
-    });
+    successLog(fileName, returnConfig)
 });
 
 
 ipcMain.on('ghost', function (e,config,pname) {
     console.log('Converting profile for Ghost')
-    const config = require('./config.json');
+    var config = require('./config.json');
     fileName = 'ghost_' + pname.replace(' ','') + '-' + Math.random().toString(36).substring(2, 6)
     console.log(fileName)
     returnConfig = {
@@ -777,14 +732,5 @@ ipcMain.on('ghost', function (e,config,pname) {
         "Name": config['fname'] + ' ' + config['sname'],
         "Country": config['country']
     }
-    console.log('converted to correct format')
-    fs.writeFile('profiles/' + fileName + '.json', JSON.stringify(returnConfig), 'utf8', (err) => {
-        if (err) {
-            console.error(err);
-            return;
-        };
-        successMessage = 'Successfully created: <br>' + path.join(__dirname, 'profiles/' + fileName + '.json')
-        console.log(successMessage)
-        mainWindow.webContents.send('output', successMessage);
-    });
+    successLog(fileName, returnConfig)
 });
